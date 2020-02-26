@@ -14,11 +14,13 @@ sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="nvidia-drm.mo
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable fstrim.timer
 systemctl enable NetworkManager.service
+sudo systemctl enable gdm.service
 useradd -m finlay
 passwd finlay
-EDITOR=nano visudo
-# allow user finlay to use sudo
-pacmatic -Syu gnome gnome-extra
-# choose packages you want
-sudo systemctl enable gdm.service
+gpasswd -a finlay wheel
+cp /etc/sudoers /etc/sudoers.bak
+sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers.bak
+echo -e "\nDefaults insults"
+visudo -c -f /etc/sudoers.bak
+echo "If the output of the last command was good, run 'cp /etc/sudoers.bak /etc/sudoers' and reboot.  If it wasn't, cry.  And then try to fix it, and inevitably fail."
 exit
