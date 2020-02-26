@@ -2,15 +2,14 @@
 
 timedatectl set-ntp true
 blkdiscard /dev/nvme0n1
-parted -s /dev/nvme0n1 mklabel gpt
-parted -s mkpart " " fat32 2048s 513MiB
-parted -s mkpart " " linux-swap 513MiB 16897MiB
-parted -s mkpart " " ext4 16897MiB 82433MiB
-parted -s mkpart " " ext4 82433MiB 100%
-parted -s set 1 esp on
-parted -s set 2 swap on
-parted -s set 3 root on
-# make partitions for esp with 512 MiB, swap with 16 GiB, root with 64 GiB, home with the rest
+parted -a optimal /dev/nvme0n1 mklabel gpt
+parted -a optimal /dev/nvme0n1 mkpart " " fat32 2048s 513MiB
+parted -a optimal /dev/nvme0n1 mkpart " " linux-swap 513MiB 16897MiB
+parted -a optimal /dev/nvme0n1 mkpart " " ext4 16897MiB 82433MiB
+parted -a optimal /dev/nvme0n1 mkpart " " ext4 82433MiB 100%
+parted -a optimal /dev/nvme0n1 set 1 esp on
+parted -a optimal /dev/nvme0n1 set 2 swap on
+# makes partitions for esp with 512 MiB, swap with 16 GiB, root with 64 GiB, home with the rest
 sync
 mkfs.ext4 /dev/nvme0n1p3
 mkfs.ext4 /dev/nvme0n1p4
