@@ -21,7 +21,6 @@ mkdir /mnt/home
 mount /dev/nvme0n1p4 /mnt/home
 mkdir /mnt/efi
 mount /dev/nvme0n1p1 /mnt/efi
-reflector -a 1 -p https --ipv4 --ipv6 --sort rate --save /etc/pacman.d/mirrorlist
 pacstrap /mnt base linux linux-firmware dosfstools exfat-utils e2fsprogs ntfs-3g networkmanager nano man-db man-pages texinfo pacmatic reflector base-devel git intel-ucode grub efibootmgr alsa-utils xorg-server mesa lib32-mesa vulkan-intel intel-media-driver nvidia lib32-nvidia-utils nvidia-prime libva-vdpau-driver libvdpau-va-gl libva-utils vdpauinfo
 genfstab -U /mnt >> /mnt/etc/fstab
 sed -i 's/relatime/noatime/g' /mnt/etc/fstab
@@ -29,4 +28,3 @@ cp /personal-arch-installation-script/installation2.sh /mnt/installation2.sh
 cp /pacman.conf /mnt/etc/pacman.conf
 arch-chroot /mnt '/bin/bash /installation2.sh'
 umount -R /mnt
-echo "please reboot to conclude installation"
