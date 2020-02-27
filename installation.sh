@@ -21,7 +21,7 @@ mkdir /mnt/home
 mount /dev/nvme0n1p4 /mnt/home
 mkdir /mnt/efi
 mount /dev/nvme0n1p1 /mnt/efi
-pacstrap /mnt base linux linux-firmware dosfstools exfat-utils e2fsprogs ntfs-3g networkmanager nano man-db man-pages texinfo pacmatic reflector base-devel git intel-ucode grub efibootmgr alsa-utils xorg-server mesa lib32-mesa vulkan-intel intel-media-driver nvidia lib32-nvidia-utils nvidia-prime libva-vdpau-driver libvdpau-va-gl libva-utils vdpauinfo
+pacstrap /mnt base linux linux-firmware dosfstools exfat-utils e2fsprogs ntfs-3g networkmanager nano man-db man-pages texinfo pacmatic reflector base-devel git intel-ucode grub efibootmgr alsa-utils xorg-server mesa lib32-mesa vulkan-intel intel-media-driver nvidia lib32-nvidia-utils nvidia-prime libva-vdpau-driver libvdpau-va-gl libva-utils vdpauinfo eog file-roller gdm gedit gnome-backgrounds gnome-calculator gnome-color-manager gnome-control-center gnome-music gnome-session gnome-settings-daemon gnome-shell gnome-shell-extensions gnome-terminal gnome-themes-extra gvfs gvfs-google mousetweaks mutter nautilus sushi totem xdg-user-dirs-gtk gnome-tweaks blender discord firefox steam qbittorrent
 genfstab -U /mnt >> /mnt/etc/fstab
 sed -i 's/relatime/noatime/g' /mnt/etc/fstab
 cp /personal-arch-installation-script/installation2.sh /mnt/installation2.sh
