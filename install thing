@@ -1,0 +1,76 @@
+ls /sys/firmware/efi/efivars
+ip link
+wifi-menu -o
+# connect to the internet
+ping -c 4 archlinux.org
+timedatectl set-ntp true
+blkdiscard
+cfdisk /dev/nvme0n1
+# make 4 partitions: an efi partition with 512 MiB, a swap
+#  with 12 GiB, a root with 48 GiB and a home with the rest
+mkfs.fat -F32 /dev/nvme0n1p1
+mkswap /dev/nvme0n1p2
+swapon /dev/nvme0n1p2
+mkfs.ext4 /dev/nvme0n1p3
+mkfs.ext4 /dev/nvme0n1p4
+mount /dev/nvme0n1p3 /mnt
+mkdir /mnt/efi
+mount /dev/nvme0n1p1 /mnt/efi
+mkdir /mnt/home
+mount /dev/nvme0n1p4 /mnt/home
+vim /etc/pacman.conf
+# add Color and uncomment multilib
+pacstrap /mnt base linux linux-firmware reflector
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+useradd -m finlay
+passwd finlay
+# fill in a password
+usermod -aG wheel finlay
+chfn finlay
+# add the attributes you would like
+reflector -a 1 -p https --ipv4 --ipv6 --sort rate --save /etc/pacman.d/mirrorlist
+su finlay
+cd
+git clone https://aur.archlinux.org/yay.git
+cd yay
+vim /etc/pacman.conf
+# add Color and uncomment multilib
+makepkg -Csi
+vim ~/.bashrc
+# add `pac="pacman_program='sudo -u #$UID yay' sudo --preserve-env=pacman_program pacmatic"`
+source ~/.bashrc
+pac -Syuu $(curl -sSL https://raw.githubusercontent.com/FintasticMan/personal-arch-installation-script/master/packages)
+# Ctrl+D
+cd
+ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+hwclock -w
+vim /etc/locale.gen
+# uncomment `en_US.UTF-8 UTF-8` and other needed locales
+locale-gen
+echo -e "LANG=en_GB.UTF-8\nLANGUAGE=en_GB:en:en_US:nl" >> /etc/locale.conf
+echo "fintasticman-arch" >> /etc/hostname
+echo "PRETTY_HOSTNAME=FintasticMan-Arch" >> /etc/machine-info
+vim /etc/hosts
+# add `127.0.0.1	localhost
+# ::1		localhost
+# 127.0.1.1	fintasticman-arch.localdomain	fintasticman-arch`
+passwd
+# set a root password
+grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
+vim /etc/default/grub
+# edit to liking
+grub-install --target=x86_64-efi --efi-directory=esp --bootloader-id=GRUB
+# Ctrl+D
+umount -R /mnt
+reboot
+# log in as finlay
+alsamixer
+# enable sound
+# if it doesn't work, install `sof-firmware` and reboot
+# if that still doesn't work, add `options snd_hda_intel dmic_detect=0`
+#  to `/etc/modprobe.d/disable-dmic.conf`
+sudo mkdir /etc/systemd/resolved.conf.d
+echo -e "DNS=1.1.1.1 2606:4700:4700::1111\nFallbackDNS=1.0.0.1 2606:4700:4700::1001\nDomains=~.\nDNSSEC=yes\nDNSOverTLS=yes" >> /etc/systemd/resolved.conf.d/dns_servers.conf
+sudo timeshift --list-devices
+sudo timeshift --create --snapshot-device $whatever_the_output_of_the_previous_command_was --rsync --verbose
