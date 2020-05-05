@@ -72,5 +72,6 @@ alsamixer
 #  to `/etc/modprobe.d/disable-dmic.conf`
 sudo mkdir /etc/systemd/resolved.conf.d
 echo -e "DNS=1.1.1.1 2606:4700:4700::1111\nFallbackDNS=1.0.0.1 2606:4700:4700::1001\nDomains=~.\nDNSSEC=yes\nDNSOverTLS=yes" >> /etc/systemd/resolved.conf.d/dns_servers.conf
+reboot
 sudo timeshift --list-devices
 sudo timeshift --create --snapshot-device $whatever_the_output_of_the_previous_command_was --rsync --verbose
