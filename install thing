@@ -1,12 +1,14 @@
 ls /sys/firmware/efi/efivars
+# make sure this directory exists
 ip link
+# make sure the wifi adapter is working
 wifi-menu -o
 # connect to the internet
 ping -c 4 archlinux.org
 timedatectl set-ntp true
 blkdiscard
-cfdisk /dev/nvme0n1
-# make 4 partitions: an efi partition with 512 MiB, a swap
+cgdisk
+# make 4 partitions: an efi partition with 1 GiB, a swap
 #  with 12 GiB, a root with 48 GiB and a home with the rest
 mkfs.fat -F32 /dev/nvme0n1p1
 mkswap /dev/nvme0n1p2
@@ -20,9 +22,11 @@ mkdir /mnt/home
 mount /dev/nvme0n1p4 /mnt/home
 vim /etc/pacman.conf
 # add Color and uncomment multilib
-pacstrap /mnt base linux linux-firmware reflector
+pacstrap /mnt base linux linux-firmware base-devel reflector
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
+visudo
+# let wheel group use sudo and add `Defaults insults`
 useradd -m finlay
 passwd finlay
 # fill in a password
@@ -69,7 +73,7 @@ alsamixer
 # enable sound
 # if it doesn't work, install `sof-firmware` and reboot
 # if that still doesn't work, add `options snd_hda_intel dmic_detect=0`
-#  to `/etc/modprobe.d/disable-dmic.conf`
+#  to `/etc/modprobe.d/disable-dmic.conf` and reboot
 sudo mkdir /etc/systemd/resolved.conf.d
 echo -e "DNS=1.1.1.1 2606:4700:4700::1111\nFallbackDNS=1.0.0.1 2606:4700:4700::1001\nDomains=~.\nDNSSEC=yes\nDNSOverTLS=yes" >> /etc/systemd/resolved.conf.d/dns_servers.conf
 reboot
